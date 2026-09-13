@@ -119,7 +119,7 @@ export default function Home() {
           {step <= 3 && (
             <div className="flex-1 flex flex-col space-y-4 justify-start">
               
-              {/* 유저 질문 말풍선 */}
+              {/* 유저 질문 말풍선 (우측 정렬 & 좌측 여백 확보) */}
               {(step === 2 || step === 3) && (
                 <div className="flex justify-end pl-8">
                   <div className="bg-white text-[#2563eb] text-[13.5px] font-semibold px-4 py-3 rounded-full shadow-sm text-center tracking-tight leading-snug max-w-[90%]">
@@ -165,14 +165,13 @@ export default function Home() {
             </div>
           )}
 
-          {/* Step 4: 체험 완료 후 빈 채팅 화면 */}
+          {/* Step 4: 빈 채팅 화면 */}
           {step === 4 && !showModal && (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-gray-400 space-y-2">
               <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-xl font-bold mb-1">
                 ?
               </div>
               <p className="text-sm font-medium text-gray-600">궁금한 문제나 개념을 물어보세요!</p>
-              <p className="text-xs text-gray-400">교재 페이지나 문제를 입력하면 AI가 풀이과정을 설명해 드립니다.</p>
             </div>
           )}
         </div>
