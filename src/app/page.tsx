@@ -1,204 +1,336 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
 
-  const [step, setStep] = useState<number>(1);
-  const [inputTypedText, setInputTypedText] = useState('');
-  
-  const [typedIndex, setTypedIndex] = useState(0);
-  const [codeLineIndex, setCodeLineIndex] = useState(0);
+  const [step, setStep] = useState(0);
 
-  const [userQuery, setUserQuery] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const targetText = '38페이지 5-3번 문제 풀이과정 모르겠어요.';
+  const [typedText, setTypedText] = useState('');
 
-  const targetInputText = '38페이지 5-3번 문제 풀이과정 설명해줘.';
+  const [visibleParagraphs, setVisibleParagraphs] = useState(0);
 
-  const textContent = `[5-3번 문제]
-사용자에게 두 수를 입력받아 큰 수를 출력하는
-프로그램을 작성하시오.
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-[풀이 과정]
- 1. 두 수를 입력받는다.
- 2. 두 수를 비교한다.
- 3. 첫 번째 수가 더 크면 첫 번째 수를 출력한다.
- 4. 그렇지 않으면 두 번째 수를 출력한다.
-
-[파이썬 코드]`;
-
-  const pythonCodeLines = [
-    'a = int(input("첫 번째 수: "))',
-    'b = int(input("두 번째 수: "))',
-    'if a > b:',
-    '    print(a)',
-    'else:',
-    '    print(b)'
-  ];
+  const [userInput, setUserInput] = useState('');
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   useEffect(() => {
-    if (step === 1) {
-      setInputTypedText('');
-      setTypedIndex(0);
-      setCodeLineIndex(0);
+    if (step >= 5) return;
+
+    let duration = 2000;
+
+    if (step === 0) duration = 1500; 
+    if (step === 1) duration = 2500; 
+    if (step === 2) duration = 3200; 
+    if (step === 3) duration = 2000; 
+    if (step === 4) duration = 7800; 
+
+    const timer = setTimeout(() => {
+      setStep((prev) => prev + 1);
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [step]);
+
+  useEffect(() => {
+    if (step === 2) {
+      setTypedText('');
       let index = 0;
-      const timer = setInterval(() => {
-        if (index < targetInputText.length) {
-          setInputTypedText(targetInputText.slice(0, index + 1));
+      const typingInterval = setInterval(() => {
+        if (index < targetText.length) {
+          setTypedText((prev) => prev + targetText.charAt(index));
           index++;
         } else {
-          clearInterval(timer);
+          clearInterval(typingInterval);
         }
-      }, 110);
-      return () => clearInterval(timer);
+      }, 80);
+
+      return () => clearInterval(typingInterval);
     }
   }, [step]);
 
   useEffect(() => {
-    if (step === 3) {
-      setTypedIndex(0);
-      setCodeLineIndex(0);
-      
-      let currentIndex = 0;
-      const textTimer = setInterval(() => {
-        if (currentIndex < textContent.length) {
-          currentIndex++;
-          setTypedIndex(currentIndex);
-        } else {
-          clearInterval(textTimer);
-          
-          let lineIdx = 0;
-          const codeTimer = setInterval(() => {
-            if (lineIdx < pythonCodeLines.length) {
-              lineIdx++;
-              setCodeLineIndex(lineIdx);
-            } else {
-              clearInterval(codeTimer);
-              setTimeout(() => {
-                setStep(4);
-              }, 3000);
-            }
-          }, 400);
+    if (step === 4) {
+      setVisibleParagraphs(0);
+      let count = 0;
+      const pInterval = setInterval(() => {
+        count++;
+        setVisibleParagraphs(count);
+        if (count >= 5) {
+          clearInterval(pInterval);
         }
-      }, 50);
+      }, 1150);
 
-      return () => {
-        clearInterval(textTimer);
-      };
+      return () => clearInterval(pInterval);
     }
   }, [step]);
 
-  const handleNextStep = () => {
-    if (step === 1) {
-      setStep(2);
-      setTimeout(() => setStep(3), 500);
-    } else if (step === 4) {
-      setShowModal(true);
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
+  }, [visibleParagraphs, step]);
+
+  const handleSendQuestion = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setShowSignupModal(true);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4 font-sans select-none">
-      <div className="relative w-full max-w-[390px] h-[780px] rounded-[36px] shadow-2xl overflow-hidden border-4 border-slate-700 flex flex-col transition-all duration-700">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 select-none">
+      {/* 핸드폰 스펙 디바이스 프레임 */}
+      <div className="w-[360px] h-[700px] bg-gray-50 rounded-[44px] border-[8px] border-gray-900 shadow-2xl flex flex-col overflow-hidden relative border-opacity-90">
         
-        {/* 메인 뷰포트 */}
-        <div
-          className={`w-full h-full pt-10 pb-24 px-6 flex flex-col transition-colors duration-700 relative overflow-y-auto ${
-            step === 4 && !showModal ? 'bg-white' : 'bg-[#a9a9a9]'
-          }`}
-        >
-          {/* 과목 헤더 */}
-          <div className="text-center mt-3 mb-6 transition-all duration-500">
-            <h1 className="text-[#2563eb] font-extrabold text-[19px] tracking-tight">컴퓨터공학응용기초</h1>
-            <p className="text-gray-700 text-[11px] mt-0.5 font-semibold">누구나 쉽게 컴퓨팅 사고 with 파이썬</p>
-          </div>
+        {/* 스마트폰 노치 (카메라 영역) */}
+        <div className="w-32 h-4 bg-gray-900 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-xl z-50 flex items-center justify-center">
+          <div className="w-3 h-3 rounded-full bg-gray-800 border border-gray-700 mr-2" />
+          <div className="w-8 h-1 bg-gray-800 rounded-full" />
+        </div>
 
-          {/* Step 1~3: 데모 영역 */}
-          {step <= 3 && (
-            <div className="flex-1 flex flex-col space-y-4 justify-start">
-              
-              {/* 유저 질문 말풍선 (우측 정렬 & 좌측 여백 확보) */}
-              {(step === 2 || step === 3) && (
-                <div className="flex justify-end pl-8">
-                  <div className="bg-white text-[#2563eb] text-[13.5px] font-semibold px-4 py-3 rounded-full shadow-sm text-center tracking-tight leading-snug max-w-[90%]">
-                    {targetInputText}
+        {/* 상단 노치 여백 */}
+        <div className="h-6 w-full bg-transparent shrink-0" />
+
+        {/* ================= STEP 0 ~ 1: 멘토 선택 시연 ================= */}
+        {step <= 1 && (
+          <div className="flex-1 p-5 flex flex-col justify-between animate-fadeIn relative">
+            <div>
+              <h2 className="text-center font-bold text-blue-600 text-base mb-5 mt-2">
+                멘토 선택
+              </h2>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                {/* 코코몽 멘토 */}
+                <div
+                  className={`bg-white rounded-2xl p-3.5 flex flex-col items-center justify-center border-2 shadow-sm transition-all duration-200 ${
+                    step === 1
+                      ? 'border-blue-600 scale-105 shadow-md animate-pulse ring-2 ring-blue-300 ring-offset-1'
+                      : 'border-transparent'
+                  }`}
+                >
+                  <div className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center mb-1.5">
+                    <span className="text-gray-400 text-lg">👤</span>
                   </div>
+                  <div className="flex items-center gap-1 font-bold text-xs text-gray-800">
+                    코코몽 
+                    <svg className="w-3 h-3 text-blue-500 fill-current" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-0.5">컴퓨터학부 24</span>
+                </div>
+
+                {/* 오뜨 멘토 */}
+                <div className="bg-white rounded-2xl p-3.5 flex flex-col items-center justify-center border-2 border-transparent shadow-sm">
+                  <div className="w-11 h-11 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center mb-1.5">
+                    <span className="text-lg">👤</span>
+                  </div>
+                  <div className="flex items-center gap-1 font-bold text-xs text-gray-800">
+                    오뜨 
+                    <svg className="w-3 h-3 text-blue-500 fill-current" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-[9px] text-gray-400 mt-0.5">글로벌미디어 24</span>
+                </div>
+
+                {/* 몬치치 멘토 */}
+                <div className="bg-white rounded-2xl p-3.5 flex flex-col items-center justify-center border-2 border-transparent shadow-sm">
+                  <div className="w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center mb-1.5">
+                    <span className="text-gray-400 text-lg">👤</span>
+                  </div>
+                  <div className="font-bold text-xs text-gray-800">몬치치</div>
+                  <span className="text-[10px] text-gray-400 mt-0.5">컴퓨터학부 25</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 질문하기 버튼 */}
+            <button
+              className={`w-full py-3.5 rounded-xl font-bold text-xs text-white transition-all duration-300 ${
+                step === 1
+                  ? 'bg-blue-600 shadow-md scale-[1.02]'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              질문하기
+            </button>
+          </div>
+        )}
+
+        {/* 멘토 채팅 시연 */}
+        {step >= 2 && step < 5 && (
+          <div className="flex-1 flex flex-col justify-between p-3.5 bg-gray-50 animate-fadeIn min-h-0">
+            {/* 상단 멘토 프로필 */}
+            <div className="flex flex-col items-center py-1 border-b border-gray-100 shrink-0">
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mb-0.5">
+                👤
+              </div>
+              <div className="flex items-center gap-1 font-bold text-xs text-blue-600">
+                코코몽 멘토 
+                <svg className="w-3 h-3 text-blue-500 fill-current" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="text-[9px] text-gray-400">컴퓨터학부 24</span>
+            </div>
+
+            {/* 채팅 말풍선 영역 */}
+            <div
+              ref={chatContainerRef}
+              className="flex-1 py-2 flex flex-col gap-2 overflow-y-auto scroll-smooth"
+            >
+              {step >= 3 && (
+                <div className="self-end bg-blue-500 text-white text-[11px] px-3 py-2 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm animate-fadeIn shrink-0">
+                  38페이지 5-3번 문제 풀이과정 모르겠어요.
                 </div>
               )}
 
-              {/* AI 답변 영역 */}
-              {step === 3 && (
-                <div className="w-full text-white text-[13.5px] space-y-3 pt-1 leading-[1.6] font-medium tracking-tight">
-                  <div className="whitespace-pre-wrap">
-                    {textContent.slice(0, typedIndex)}
-                  </div>
+              {/* 애니메이션 */}
+              {step >= 4 && (
+                <div className="self-start bg-white text-gray-800 text-[10px] leading-relaxed p-3 rounded-2xl rounded-tl-none max-w-[94%] shadow-sm border border-gray-100 space-y-2">
+                  {visibleParagraphs >= 1 && (
+                    <p className="transition-all duration-700 ease-out animate-fadeIn">
+                      이 문제는 두 수를 입력받아서 둘 중 더 큰 수를 출력하면 돼요!
+                    </p>
+                  )}
+                  
+                  {visibleParagraphs >= 2 && (
+                    <p className="transition-all duration-700 ease-out animate-fadeIn">
+                      먼저 input()을 사용해서 첫 번째 수와 두 번째 수를 각각 입력받아요. 입력받은 값은 문자열이기 때문에 int()를 사용해서 숫자로 바꿔줍니다.
+                    </p>
+                  )}
 
-                  {typedIndex >= textContent.length && (
-                    <div className="bg-[#f8fafc] text-gray-900 rounded-[20px] p-5 shadow-sm border border-[#2563eb]/40 font-mono text-[13px] leading-[1.6] mt-2 space-y-0.5">
-                      {pythonCodeLines.slice(0, codeLineIndex).map((line, idx) => {
-                        if (line.trim().startsWith('if')) {
-                          return (
-                            <div key={idx}>
-                              <span className="text-red-500 font-semibold">if</span>
-                              {line.replace('if', '')}
-                            </div>
-                          );
-                        }
-                        if (line.trim().startsWith('else:')) {
-                          return (
-                            <div key={idx}>
-                              <span className="text-red-500 font-semibold">else</span>:
-                            </div>
-                          );
-                        }
-                        return <div key={idx}>{line}</div>;
-                      })}
-                      {codeLineIndex < pythonCodeLines.length && (
-                        <span className="inline-block w-1.5 h-3.5 bg-blue-600 animate-pulse"></span>
-                      )}
+                  {visibleParagraphs >= 3 && (
+                    <p className="transition-all duration-700 ease-out animate-fadeIn">
+                      그다음 if문으로 두 수를 비교하면 돼요.<br />
+                      a &gt; b라면 ➔ 첫 번째 수 a가 더 크니까 a를 출력하고, 그렇지 않다면 ➔ 두 번째 수 b를 출력하면 됩니다.
+                    </p>
+                  )}
+
+                  {visibleParagraphs >= 4 && (
+                    <div className="space-y-1.5 transition-all duration-700 ease-out animate-fadeIn">
+                      <p>코드는 이렇게 작성할 수 있어요.</p>
+                      <div className="font-mono text-[9.5px] bg-gray-50 p-2 rounded-lg text-gray-700 leading-tight border border-gray-100">
+                        a = int(input(&quot;첫 번째 수: &quot;))<br />
+                        b = int(input(&quot;두 번째 수: &quot;))<br />
+                        if a &gt; b:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;print(a)<br />
+                        else:<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;print(b)
+                      </div>
                     </div>
+                  )}
+
+                  {visibleParagraphs >= 5 && (
+                    <p className="transition-all duration-700 ease-out animate-fadeIn">
+                      예를 들어 a에 10, b에 7을 입력하면 10 &gt; 7이 참이니까 10이 출력되는 방식이에요.
+                    </p>
                   )}
                 </div>
               )}
             </div>
-          )}
 
-          {/* Step 4: 빈 채팅 화면 */}
-          {step === 4 && !showModal && (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-gray-400 space-y-2">
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-xl font-bold mb-1">
-                ?
+            {/* 하단 입력창 */}
+            <div className="relative flex items-center bg-white rounded-full px-3.5 py-1.5 border border-gray-200 shadow-sm shrink-0 mt-1">
+              <span className="text-gray-400 mr-1.5 text-xs">...</span>
+              
+              <div className="w-full text-xs text-gray-700 bg-transparent flex items-center overflow-hidden">
+                {step === 2 ? (
+                  <span>
+                    {typedText}
+                    <span className="inline-block w-0.5 h-3.5 bg-blue-600 ml-0.5 animate-pulse" />
+                  </span>
+                ) : (
+                  <span className="text-gray-300 text-[11px]">어떤 문제의 풀이가 궁금하신가요?</span>
+                )}
               </div>
-              <p className="text-sm font-medium text-gray-600">궁금한 문제나 개념을 물어보세요!</p>
-            </div>
-          )}
-        </div>
 
-        {/* 팝업 모달 */}
-        {showModal && (
-          <div className="absolute inset-0 z-40 bg-black/20 backdrop-blur-[1px] flex items-center justify-center p-6">
-            <div className="bg-white rounded-3xl p-6 w-full max-w-[300px] text-center shadow-2xl space-y-6">
-              <p className="text-[13px] font-bold text-gray-900 leading-snug">
-                질문을 하려면 회원가입이 필요해요.<br />지금 회원가입 하시겠어요?
+              {/* 전송 버튼 */}
+              <button
+                className={`ml-1.5 p-1.5 rounded-full text-white transition-all shrink-0 ${
+                  step === 2 && typedText.length === targetText.length
+                    ? 'bg-blue-600 scale-110 animate-pulse'
+                    : 'bg-blue-500'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 실제 실행 화면 */}
+        {step === 5 && (
+          <div className="flex-1 flex flex-col justify-between p-4 bg-gray-50 animate-fadeIn">
+            <div className="flex flex-col items-center py-6">
+              <div className="w-11 h-11 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mb-1.5">
+                👤
+              </div>
+              <div className="flex items-center gap-1 font-bold text-sm text-blue-600">
+                코코몽 멘토 
+                <svg className="w-3.5 h-3.5 text-blue-500 fill-current" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <span className="text-[11px] text-gray-400 mt-0.5">컴퓨터학부 24</span>
+            </div>
+
+            <div className="flex-1" />
+
+            <form
+              onSubmit={handleSendQuestion}
+              className="relative flex items-center bg-white rounded-full px-3.5 py-2.5 border border-gray-200 shadow-sm"
+            >
+              <span className="text-gray-400 mr-2 text-xs">...</span>
+              <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder="어떤 문제의 풀이가 궁금하신가요?"
+                className="w-full text-xs text-gray-700 bg-transparent outline-none"
+              />
+              <button
+                type="submit"
+                className="ml-2 p-1.5 rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-colors shrink-0"
+              >
+                <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* 회원가입 필요 모달 */}
+        {showSignupModal && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-5 z-50 animate-fadeIn">
+            <div className="bg-white rounded-2xl p-5 w-full max-w-[260px] shadow-2xl flex flex-col items-center text-center">
+              <p className="text-xs font-medium text-gray-800 leading-relaxed mb-5">
+                질문을 하려면 회원가입이 필요해요.
+                <br />
+                지금 회원가입 하시겠어요?
               </p>
 
-              <div className="flex gap-2.5">
+              <div className="flex w-full gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 bg-[#f1f3f5] hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition"
+                  onClick={() => setShowSignupModal(false)}
+                  className="flex-1 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs transition-colors"
                 >
                   취소
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    router.push('/signup');
-                  }}
-                  className="flex-1 py-3 bg-[#4263eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow-sm"
+                  onClick={() => router.push('/signup')}
+                  className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-colors"
                 >
                   회원가입
                 </button>
@@ -207,61 +339,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* 하단 입력바 */}
-        <div className="absolute bottom-5 left-4 right-4 z-20">
-          <div className={`rounded-full px-4 py-3 shadow-md flex items-center justify-between gap-2 border ${
-            step === 4 && !showModal ? 'bg-gray-100 border-gray-200' : 'bg-[#c2c5cb]/90 border-transparent'
-          }`}>
-            <div className="text-gray-700 font-bold text-sm tracking-widest pl-1 select-none">...</div>
-
-            <div className="flex-1 text-xs text-gray-700 font-medium px-2">
-              {step === 1 && (
-                <span className="text-gray-800 truncate block">
-                  {inputTypedText}
-                  <span className="inline-block w-0.5 h-3.5 bg-blue-600 ml-0.5 align-middle animate-pulse"></span>
-                </span>
-              )}
-              {(step === 2 || step === 3) && (
-                <span className="text-gray-500/80 truncate block">어떤 문제의 풀이가 궁금하신가요?</span>
-              )}
-              {step === 4 && (
-                <input
-                  type="text"
-                  value={userQuery}
-                  onChange={(e) => setUserQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
-                  placeholder="어떤 문제의 풀이가 궁금하신가요?"
-                  className="w-full bg-transparent text-gray-800 placeholder-gray-400 text-xs focus:outline-none"
-                />
-              )}
-            </div>
-
-            <button
-              onClick={handleNextStep}
-              className={`relative flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb] text-white transition-all duration-300 transform active:scale-95 shadow-md ${
-                step === 1 || step === 4 ? 'hover:bg-blue-700 cursor-pointer' : 'opacity-90'
-              }`}
-            >
-              {step === 1 && (
-                <span className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-75"></span>
-              )}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4 relative z-10"
-              >
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </div>
-
+        {/* 스마트폰 홈 바 */}
+        <div className="w-28 h-1 bg-gray-300 rounded-full absolute bottom-1.5 left-1/2 -translate-x-1/2" />
       </div>
     </div>
   );
