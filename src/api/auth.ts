@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { API } from './axios';
+
 import { 
   ApiResponse, 
   SignUpReqDTO, 
@@ -6,13 +7,6 @@ import {
   LoginReqDTO,
   LoginResDTO
 } from '@/types/auth';
-
-const API = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 // 1. 이메일 인증코드 발송 (/auth/email/send)
 export const sendEmailCodeAPI = async (email: string) => {
