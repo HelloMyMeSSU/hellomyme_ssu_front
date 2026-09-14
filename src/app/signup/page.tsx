@@ -86,12 +86,12 @@ export default function SignUpPage() {
         authCode,
         nickname,
         password,
-        agreedTermIds: [9007199254740991, 9007199254740992],
+        agreedTermIds: [1, 2],
       });
 
       if (res.isSuccess) {
         showAlertModal('회원가입이 성공적으로 완료되었습니다!', () => {
-          router.push('/complete');
+          router.push('/notice');
         });
       }
     } catch (error: any) {
@@ -103,28 +103,41 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4 font-sans select-none">
-      <div className="relative w-full max-w-[390px] h-[780px] rounded-[36px] shadow-2xl overflow-hidden border-4 border-slate-700 bg-white flex flex-col p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 select-none font-sans">
+      {/* 랜딩/Notice와 동일한 핸드폰 스펙 디바이스 프레임 */}
+      <div className="w-[360px] h-[700px] bg-gray-50 rounded-[44px] border-[8px] border-gray-900 shadow-2xl flex flex-col overflow-hidden relative border-opacity-90 justify-between p-5">
         
-        <div className="flex-1 flex flex-col justify-between pt-6 pb-4">
-          <div className="space-y-6">
-            <h2 className="text-[#2b66d9] font-bold text-center text-xl mb-8">회원가입</h2>
+        {/* 스마트폰 노치 (카메라 영역) */}
+        <div className="w-32 h-4 bg-gray-900 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-xl z-50 flex items-center justify-center">
+          <div className="w-3 h-3 rounded-full bg-gray-800 border border-gray-700 mr-2" />
+          <div className="w-8 h-1 bg-gray-800 rounded-full" />
+        </div>
+
+        {/* 상단 노치 영역 공간 확보 */}
+        <div className="h-3 w-full bg-transparent shrink-0" />
+
+        {/* 메인 폼 콘텐츠 영역 */}
+        <div className="flex-1 flex flex-col justify-between overflow-y-auto no-scrollbar py-2">
+          <div className="space-y-4">
+            <h2 className="text-center font-bold text-blue-600 text-lg mb-4 mt-1">
+              회원가입
+            </h2>
 
             {/* 닉네임 */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-800">닉네임</label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-gray-700 ml-1">닉네임</label>
               <input
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="닉네임을 입력해주세요."
-                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-blue-400 transition"
+                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
               />
             </div>
 
             {/* 이메일 & 인증하기 */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-800">이메일</label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-gray-700 ml-1">이메일</label>
               <div className="flex gap-2">
                 <input
                   type="email"
@@ -132,16 +145,16 @@ export default function SignUpPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="이메일을 입력해주세요."
                   disabled={isAuthSuccess === true}
-                  className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-blue-400 transition disabled:bg-gray-100"
+                  className="flex-1 bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition disabled:bg-gray-100"
                 />
                 <button
                   type="button"
                   onClick={handleSendCode}
                   disabled={!email.trim() || isSending || isAuthSuccess === true}
-                  className={`px-4 py-3 rounded-xl text-xs font-medium transition-all ${
+                  className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 shadow-sm ${
                     email.trim() && !isSending && isAuthSuccess !== true
-                      ? 'bg-[#2b66d9] text-white cursor-pointer hover:bg-blue-700'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-700 active:scale-95'
+                      : 'bg-gray-300 text-white cursor-not-allowed'
                   }`}
                 >
                   {isSending ? '발송중...' : '인증하기'}
@@ -156,16 +169,16 @@ export default function SignUpPage() {
                   onChange={(e) => setAuthCode(e.target.value)}
                   placeholder="인증번호를 입력해주세요."
                   disabled={isAuthSuccess === true}
-                  className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-blue-400 transition disabled:bg-gray-100"
+                  className="flex-1 bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition disabled:bg-gray-100"
                 />
                 <button
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={!authCode.trim() || isAuthSuccess === true}
-                  className={`px-3 py-3 rounded-xl text-xs font-medium transition-all ${
+                  className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 shadow-sm ${
                     authCode.trim() && isAuthSuccess !== true
-                      ? 'bg-slate-700 text-white cursor-pointer hover:bg-slate-800'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gray-700 text-white cursor-pointer hover:bg-gray-800 active:scale-95'
+                      : 'bg-gray-300 text-white cursor-not-allowed'
                   }`}
                 >
                   확인
@@ -173,66 +186,69 @@ export default function SignUpPage() {
               </div>
 
               {isAuthSuccess === true && (
-                <p className="text-[11px] text-[#2b66d9] mt-1 font-medium">{authMessage}</p>
+                <p className="text-[10px] text-blue-600 mt-1.5 ml-1 font-medium">{authMessage}</p>
               )}
               {isAuthSuccess === false && (
-                <p className="text-[11px] text-red-500 mt-1 font-medium">{authMessage}</p>
+                <p className="text-[10px] text-red-500 mt-1.5 ml-1 font-medium">{authMessage}</p>
               )}
             </div>
 
             {/* 비밀번호 */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-800">비밀번호</label>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-gray-700 ml-1">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력해주세요."
-                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-blue-400 transition"
+                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
               />
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="비밀번호를 재입력해주세요."
-                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-blue-400 transition"
+                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
               />
 
               {isPasswordMatch && (
-                <p className="text-[11px] text-[#2b66d9] mt-1 font-medium">비밀번호가 일치합니다.</p>
+                <p className="text-[10px] text-blue-600 mt-1 ml-1 font-medium">비밀번호가 일치합니다.</p>
               )}
               {isPasswordMismatch && (
-                <p className="text-[11px] text-red-500 mt-1 font-medium">비밀번호가 일치하지 않습니다.</p>
+                <p className="text-[10px] text-red-500 mt-1 ml-1 font-medium">비밀번호가 일치하지 않습니다.</p>
               )}
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSignUpSubmit}
-            disabled={!isFormValid || isLoading}
-            className={`w-full py-4 rounded-2xl text-sm font-bold transition-all shadow-sm ${
-              isFormValid && !isLoading
-                ? 'bg-[#2b66d9] text-white cursor-pointer hover:bg-blue-700'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {isLoading ? '처리 중...' : '회원가입 하기'}
-          </button>
+          {/* 하단 회원가입 하기 버튼 */}
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={handleSignUpSubmit}
+              disabled={!isFormValid || isLoading}
+              className={`w-full py-3.5 rounded-2xl text-xs font-bold transition-all shadow-sm ${
+                isFormValid && !isLoading
+                  ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-700 active:scale-[0.99]'
+                  : 'bg-gray-300 text-white cursor-not-allowed'
+              }`}
+            >
+              {isLoading ? '처리 중...' : '회원가입 하기'}
+            </button>
+          </div>
         </div>
 
-        {/* 안내/에러 알림 커스텀 모달 (첨부 이미지 디자인 재현) */}
+        {/* 커스텀 모달 알림 */}
         {modalConfig.isOpen && (
-          <div className="absolute inset-0 z-50 bg-black/20 backdrop-blur-[1px] flex items-center justify-center p-6">
-            <div className="bg-white rounded-3xl p-6 w-full max-w-[300px] text-center shadow-2xl space-y-6">
-              <p className="text-[13px] font-bold text-gray-900 leading-snug whitespace-pre-wrap">
+          <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-5 animate-fadeIn">
+            <div className="bg-white rounded-3xl p-5 w-full max-w-[260px] text-center shadow-2xl space-y-4">
+              <p className="text-xs font-bold text-gray-800 leading-relaxed whitespace-pre-wrap">
                 {modalConfig.message}
               </p>
 
               <button
                 type="button"
                 onClick={closeModal}
-                className="w-full py-3 bg-[#4263eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow-sm"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow-md"
               >
                 확인
               </button>
@@ -240,6 +256,8 @@ export default function SignUpPage() {
           </div>
         )}
 
+        {/* 스마트폰 하단 홈 바 */}
+        <div className="w-28 h-1 bg-gray-300 rounded-full absolute bottom-1.5 left-1/2 -translate-x-1/2" />
       </div>
     </div>
   );
