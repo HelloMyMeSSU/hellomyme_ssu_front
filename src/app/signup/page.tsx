@@ -4,6 +4,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sendEmailCodeAPI, verifyEmailCodeAPI, signUpAPI } from '@/api/auth';
 
+const BLUE = '#2F6BFF';
+const INDIGO = '#4459B4';
+const RED = '#F0392B';
+const GRAY_BTN = '#D3D3D3';
+const SIDE = '8.5%';
+const SAFE_TOP = 'env(safe-area-inset-top, 0px)';
+const SAFE_BOTTOM = 'env(safe-area-inset-bottom, 0px)';
+
 export default function SignUpPage() {
   const router = useRouter();
 
@@ -102,163 +110,278 @@ export default function SignUpPage() {
     }
   };
 
+  const canSend = !!email.trim() && !isSending && isAuthSuccess !== true;
+  const canVerify = !!authCode.trim() && isAuthSuccess !== true;
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 select-none font-sans">
-      {/* 랜딩/Notice와 동일한 핸드폰 스펙 디바이스 프레임 */}
-      <div className="w-[360px] h-[700px] bg-gray-50 rounded-[44px] border-[8px] border-gray-900 shadow-2xl flex flex-col overflow-hidden relative border-opacity-90 justify-between p-5">
-        
-        {/* 스마트폰 노치 (카메라 영역) */}
-        <div className="w-32 h-4 bg-gray-900 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-xl z-50 flex items-center justify-center">
-          <div className="w-3 h-3 rounded-full bg-gray-800 border border-gray-700 mr-2" />
-          <div className="w-8 h-1 bg-gray-800 rounded-full" />
-        </div>
+    <div style={styles.bodyWrapper}>
+      {/* placeholder 색상은 인라인으로 못 바꿔서 여기서만 지정 */}
+      <style>{`.su-input::placeholder{color:#C8C8CC;opacity:1}.su-input:focus{outline:none}`}</style>
 
-        {/* 상단 노치 영역 공간 확보 */}
-        <div className="h-3 w-full bg-transparent shrink-0" />
+      <div style={styles.appContainer}>
+        {/* 스크롤 영역: 작은 화면에서는 폼만 스크롤 */}
+        <div style={styles.scrollArea}>
+          <h2 style={styles.title}>회원가입</h2>
 
-        {/* 메인 폼 콘텐츠 영역 */}
-        <div className="flex-1 flex flex-col justify-between overflow-y-auto no-scrollbar py-2">
-          <div className="space-y-4">
-            <h2 className="text-center font-bold text-blue-600 text-lg mb-4 mt-1">
-              회원가입
-            </h2>
-
-            {/* 닉네임 */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-gray-700 ml-1">닉네임</label>
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="닉네임을 입력해주세요."
-                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
-              />
-            </div>
-
-            {/* 이메일 & 인증하기 */}
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-gray-700 ml-1">이메일</label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="이메일을 입력해주세요."
-                  disabled={isAuthSuccess === true}
-                  className="flex-1 bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition disabled:bg-gray-100"
-                />
-                <button
-                  type="button"
-                  onClick={handleSendCode}
-                  disabled={!email.trim() || isSending || isAuthSuccess === true}
-                  className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 shadow-sm ${
-                    email.trim() && !isSending && isAuthSuccess !== true
-                      ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-700 active:scale-95'
-                      : 'bg-gray-300 text-white cursor-not-allowed'
-                  }`}
-                >
-                  {isSending ? '발송중...' : '인증하기'}
-                </button>
-              </div>
-
-              {/* 인증번호 입력 & 확인 */}
-              <div className="flex gap-2 mt-2">
-                <input
-                  type="text"
-                  value={authCode}
-                  onChange={(e) => setAuthCode(e.target.value)}
-                  placeholder="인증번호를 입력해주세요."
-                  disabled={isAuthSuccess === true}
-                  className="flex-1 bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition disabled:bg-gray-100"
-                />
-                <button
-                  type="button"
-                  onClick={handleVerifyCode}
-                  disabled={!authCode.trim() || isAuthSuccess === true}
-                  className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 shadow-sm ${
-                    authCode.trim() && isAuthSuccess !== true
-                      ? 'bg-gray-700 text-white cursor-pointer hover:bg-gray-800 active:scale-95'
-                      : 'bg-gray-300 text-white cursor-not-allowed'
-                  }`}
-                >
-                  확인
-                </button>
-              </div>
-
-              {isAuthSuccess === true && (
-                <p className="text-[10px] text-blue-600 mt-1.5 ml-1 font-medium">{authMessage}</p>
-              )}
-              {isAuthSuccess === false && (
-                <p className="text-[10px] text-red-500 mt-1.5 ml-1 font-medium">{authMessage}</p>
-              )}
-            </div>
-
-            {/* 비밀번호 */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-700 ml-1">비밀번호</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="비밀번호를 입력해주세요."
-                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
-              />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="비밀번호를 재입력해주세요."
-                className="w-full bg-white border border-gray-100 rounded-2xl px-4 py-3 text-xs text-gray-800 placeholder-gray-300 shadow-sm focus:outline-none focus:border-blue-400 transition"
-              />
-
-              {isPasswordMatch && (
-                <p className="text-[10px] text-blue-600 mt-1 ml-1 font-medium">비밀번호가 일치합니다.</p>
-              )}
-              {isPasswordMismatch && (
-                <p className="text-[10px] text-red-500 mt-1 ml-1 font-medium">비밀번호가 일치하지 않습니다.</p>
-              )}
-            </div>
+          {/* 닉네임 */}
+          <div style={{ ...styles.section, marginTop: 0 }}>
+            <label style={styles.label}>닉네임</label>
+            <input
+              className="su-input"
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="닉네임을 입력해주세요."
+              style={styles.input}
+            />
           </div>
 
-          {/* 하단 회원가입 하기 버튼 */}
-          <div className="pt-4">
-            <button
-              type="button"
-              onClick={handleSignUpSubmit}
-              disabled={!isFormValid || isLoading}
-              className={`w-full py-3.5 rounded-2xl text-xs font-bold transition-all shadow-sm ${
-                isFormValid && !isLoading
-                  ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-700 active:scale-[0.99]'
-                  : 'bg-gray-300 text-white cursor-not-allowed'
-              }`}
-            >
-              {isLoading ? '처리 중...' : '회원가입 하기'}
-            </button>
-          </div>
-        </div>
-
-        {/* 커스텀 모달 알림 */}
-        {modalConfig.isOpen && (
-          <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-5 animate-fadeIn">
-            <div className="bg-white rounded-3xl p-5 w-full max-w-[260px] text-center shadow-2xl space-y-4">
-              <p className="text-xs font-bold text-gray-800 leading-relaxed whitespace-pre-wrap">
-                {modalConfig.message}
-              </p>
-
+          {/* 이메일 & 인증번호 */}
+          <div style={styles.section}>
+            <label style={styles.label}>이메일</label>
+            <div style={styles.row}>
+              <input
+                className="su-input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="이메일을 입력해주세요."
+                disabled={isAuthSuccess === true}
+                style={{ ...styles.input, ...(isAuthSuccess === true ? styles.inputLocked : null), flex: 1, minWidth: 0 }}
+              />
               <button
                 type="button"
-                onClick={closeModal}
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow-md"
+                onClick={handleSendCode}
+                disabled={!canSend}
+                style={{ ...styles.sideBtn, backgroundColor: canSend ? INDIGO : GRAY_BTN, cursor: canSend ? 'pointer' : 'not-allowed' }}
               >
+                {isSending ? '발송중...' : '인증하기'}
+              </button>
+            </div>
+
+            <div style={{ ...styles.inputWrap, marginTop: 9 }}>
+              <input
+                className="su-input"
+                type="text"
+                value={authCode}
+                onChange={(e) => setAuthCode(e.target.value)}
+                placeholder="인증번호를 입력해주세요."
+                disabled={isAuthSuccess === true}
+                style={{ ...styles.input, ...(isAuthSuccess === true ? styles.inputLocked : null), paddingRight: canVerify ? 76 : 18 }}
+              />
+              {/* 시안에는 없지만 인증 확인 동작에 필요해서, 입력이 있을 때만 입력창 안에 작게 표시 */}
+              {canVerify && (
+                <button type="button" onClick={handleVerifyCode} style={styles.verifyInlineBtn}>
+                  확인
+                </button>
+              )}
+            </div>
+
+            {isAuthSuccess === true && <p style={{ ...styles.msg, color: BLUE }}>{authMessage}</p>}
+            {isAuthSuccess === false && <p style={{ ...styles.msg, color: RED }}>{authMessage}</p>}
+          </div>
+
+          {/* 비밀번호 */}
+          <div style={styles.section}>
+            <label style={styles.label}>비밀번호</label>
+            <input
+              className="su-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호를 입력해주세요."
+              style={styles.input}
+            />
+            <input
+              className="su-input"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="비밀번호를 재입력해주세요."
+              style={{ ...styles.input, marginTop: 9 }}
+            />
+
+            {isPasswordMatch && <p style={{ ...styles.msg, color: BLUE }}>비밀번호가 일치합니다.</p>}
+            {isPasswordMismatch && <p style={{ ...styles.msg, color: RED }}>비밀번호가 일치하지 않습니다.</p>}
+          </div>
+        </div>
+
+        {/* 하단 회원가입 하기 버튼 */}
+        <div style={styles.bottomArea}>
+          <button
+            type="button"
+            onClick={handleSignUpSubmit}
+            disabled={!isFormValid || isLoading}
+            style={{
+              ...styles.submitBtn,
+              backgroundColor: isFormValid && !isLoading ? INDIGO : GRAY_BTN,
+              cursor: isFormValid && !isLoading ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {isLoading ? '처리 중...' : '회원가입 하기'}
+          </button>
+        </div>
+
+        {/* 알림 모달 (메인 화면 팝업과 같은 스타일) */}
+        {modalConfig.isOpen && (
+          <div style={styles.dim}>
+            <div style={styles.dialog} role="dialog" aria-modal="true">
+              <p style={styles.dialogText}>{modalConfig.message}</p>
+              <button type="button" onClick={closeModal} style={styles.dialogBtn}>
                 확인
               </button>
             </div>
           </div>
         )}
-
-        {/* 스마트폰 하단 홈 바 */}
-        <div className="w-28 h-1 bg-gray-300 rounded-full absolute bottom-1.5 left-1/2 -translate-x-1/2" />
       </div>
     </div>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  bodyWrapper: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: '#121212',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
+    fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif',
+  },
+  appContainer: {
+    width: '100%',
+    maxWidth: 430,
+    height: '100dvh',
+    maxHeight: 932,
+    position: 'relative',
+    backgroundColor: '#F5F5F5',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: '0 0 40px rgba(0, 0, 0, 0.5)',
+  },
+  scrollArea: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
+    padding: `calc(${SAFE_TOP} + 83px) ${SIDE} 16px`,
+    scrollbarWidth: 'none',
+  },
+  title: {
+    margin: '0 0 42px',
+    textAlign: 'center',
+    fontSize: 22,
+    lineHeight: '28px',
+    fontWeight: 700,
+    color: BLUE,
+    letterSpacing: '-0.5px',
+  },
+  section: { marginTop: 22 },
+  label: {
+    display: 'block',
+    marginBottom: 12,
+    fontSize: 13,
+    lineHeight: '16px',
+    fontWeight: 700,
+    color: '#222',
+  },
+  row: { display: 'flex', gap: 9 },
+  inputWrap: { position: 'relative' },
+  input: {
+    display: 'block',
+    width: '100%',
+    boxSizing: 'border-box',
+    height: 54,
+    padding: '0 18px',
+    border: 'none',
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    fontSize: 14,
+    color: '#222',
+    fontFamily: 'inherit',
+  },
+  inputLocked: { color: '#8A8A8A', WebkitTextFillColor: '#8A8A8A', opacity: 1 },
+  sideBtn: {
+    flexShrink: 0,
+    width: 78,
+    height: 54,
+    border: 'none',
+    borderRadius: 14,
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+  },
+  verifyInlineBtn: {
+    position: 'absolute',
+    top: 9,
+    right: 9,
+    width: 54,
+    height: 36,
+    border: 'none',
+    borderRadius: 10,
+    backgroundColor: INDIGO,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+  },
+  msg: { margin: '8px 0 0 8px', fontSize: 12, lineHeight: '16px' },
+
+  bottomArea: {
+    flexShrink: 0,
+    padding: `12px ${SIDE} calc(${SAFE_BOTTOM} + 48px)`,
+  },
+  submitBtn: {
+    width: '100%',
+    height: 54,
+    border: 'none',
+    borderRadius: 14,
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+  },
+
+  dim: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
+  dialog: {
+    width: '79%',
+    maxWidth: 340,
+    boxSizing: 'border-box',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: '22px 16px 16px',
+  },
+  dialogText: {
+    margin: '0 0 18px',
+    textAlign: 'center',
+    fontSize: 14,
+    lineHeight: 1.5,
+    color: '#111',
+    letterSpacing: '-0.3px',
+    whiteSpace: 'pre-wrap',
+  },
+  dialogBtn: {
+    width: '100%',
+    height: 44,
+    border: 'none',
+    borderRadius: 8,
+    backgroundColor: INDIGO,
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+  },
+};
