@@ -1,1 +1,11 @@
 @import "tailwindcss";
+html, body {
+  margin: 0;
+  overscroll-behavior: none;              
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;            
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;            
+}
+img { -webkit-user-drag: none; user-select: none; }
+button { font-family: inherit; }
