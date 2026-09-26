@@ -8,14 +8,14 @@ import 'swiper/css';
 
 const YELLOW = '#FFE94D';
 
-
 const guideText: React.CSSProperties = {
   color: '#FFFFFF',
   fontFamily: 'Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif',
   fontWeight: 300,
   fontSize: 20,
   letterSpacing: '-0.3px',
-};const SIDE = '10.5%';
+};
+const SIDE = '10.5%';
 
 const SAFE_TOP = 'env(safe-area-inset-top, 0px)';
 const SAFE_BOTTOM = 'env(safe-area-inset-bottom, 0px)';
@@ -163,25 +163,29 @@ export default function TutorialPage() {
               </div>
 
               <div style={styles.slide1Content}>
-                <span style={{ ...styles.clickText, marginBottom: 6 }}>Click!</span>
+                <div style={styles.cardsGrid}>
 
-                <div style={styles.cardQuestionWrap}>
-                  <div style={styles.cardQuestion} onClick={() => goToSlide(1)}>
-                    <img src="/icon-question-illust.png" alt="질문하기 일러스트" draggable={false} style={styles.questionIllust} />
-                    <span style={styles.subTag}>&lt;컴퓨터공학응용기초&gt;</span>
-                    <span style={styles.cardTitle}>문제 풀이 질문하기</span>
+                  <div style={styles.cardSlot}>
+                    <span style={styles.clickText}>Click!</span>
+                    <div style={styles.cardQuestion} onClick={() => goToSlide(1)}>
+                      <img src="/icon-question-illust.png" alt="질문하기 일러스트" draggable={false} style={styles.questionIllust} />
+                      <span style={styles.subTag}>&lt;컴퓨터공학응용기초&gt;</span>
+                      <span style={styles.cardTitle}>문제 풀이 질문하기</span>
+                    </div>
+                    <div style={styles.arrowGuide}>
+                      <GuideArrowLeft />
+                      <span>예시 문제로 질문해보기</span>
+                    </div>
                   </div>
 
-                  <div style={styles.arrowGuide}>
-                    <GuideArrowLeft />
-                    <span>예시 문제로 질문해보기</span>
+                  <div style={styles.cardSlot}>
+                    <div style={styles.cardChat}>
+                      <img src="/icon-chat-illust.png" alt="대화하기 일러스트" draggable={false} style={styles.chatIllust} />
+                      <span style={styles.chatSubtext}>같은 학교, 같은 과, 같은 진로</span>
+                      <span style={styles.chatTitle}>선배와 대화하기</span>
+                    </div>
                   </div>
-                </div>
 
-                <div style={styles.cardChat}>
-                  <img src="/icon-chat-illust.png" alt="대화하기 일러스트" draggable={false} style={styles.chatIllust} />
-                  <span style={styles.chatSubtext}>같은 학교, 같은 과, 같은 진로</span>
-                  <span style={styles.chatTitle}>선배와 대화하기</span>
                 </div>
               </div>
             </div>
@@ -401,8 +405,17 @@ const styles: { [key: string]: React.CSSProperties } = {
   headerTitle: { fontSize: 15, fontWeight: 700, color: '#111', letterSpacing: '-0.3px' },
   profileIcon: { width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', display: 'block' },
   logoImg: { height: 34, width: 'auto', objectFit: 'contain', display: 'block' },
-  clickText: { color: YELLOW, fontSize: 15, fontWeight: 500, textAlign: 'center', lineHeight: 1.2 },
-
+  clickText: {
+    position: 'absolute',
+    top: -30,
+    left: 0,
+    right: 0,
+    color: YELLOW,
+    fontSize: 15,
+    fontWeight: 500,
+    textAlign: 'center',
+    lineHeight: 1.2,
+  },
   /* SLIDE 1 */
   slide1Content: {
     flex: 1,
@@ -411,10 +424,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: 'column',
     padding: `clamp(32px, 9dvh, 90px) ${SIDE} clamp(60px, 15dvh, 150px)`,
   },
-  cardQuestionWrap: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' },
-  cardQuestion: {
+  cardsGrid: {
     flex: 1,
     minHeight: 0,
+    display: 'grid',
+    gridTemplateRows: '1fr 1fr',
+    rowGap: 44, // Click! + 화살표 문구가 들어갈 자리
+  },
+  cardSlot: { position: 'relative', minHeight: 0 },
+  cardQuestionWrap: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' },
+  cardQuestion: {
+    position: 'absolute',
+    inset: 0,
     backgroundColor: '#FFFFFF',
     borderRadius: 22,
     padding: 'clamp(12px, 3%, 24px) 20px',
@@ -433,7 +454,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   arrowGuide: {
     ...guideText,
     position: 'absolute',
-    top: 'calc(100% + 8px)',
+    bottom: -40,
     left: '38%',
     display: 'flex',
     alignItems: 'flex-end',
@@ -445,9 +466,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     whiteSpace: 'nowrap',
   },
   cardChat: {
-    flex: 1,
-    minHeight: 0,
-    marginTop: 20,
+    position: 'absolute',
+    inset: 0,
     borderRadius: 22,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     padding: 'clamp(12px, 3%, 24px) 20px',
@@ -668,5 +688,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#222',
     whiteSpace: 'pre-wrap',
   },
-
 };
