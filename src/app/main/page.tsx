@@ -47,7 +47,7 @@ export default function MainPage() {
             <span style={styles.cardTitle}>문제 풀이 질문하기</span>
           </div>
 
-          <div style={{ ...styles.card, marginTop: 20 }} onClick={() => handleAction('chat')}>
+          <div style={{ ...styles.card}} onClick={() => handleAction('chat')}>
             <img src="/icon-chat-illust.png" alt="대화하기 일러스트" draggable={false} style={styles.chatIllust} />
             <span style={styles.subTag}>같은 학교, 같은 과, 같은 진로</span>
             <span style={styles.cardTitle}>선배와 대화하기</span>
@@ -111,12 +111,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   profileBtn: { padding: 0, border: 'none', background: 'none', cursor: 'pointer', display: 'block' },
   profileIcon: { width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', display: 'block' },
 
-  content: {
+    content: {
     flex: 1,
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
-    padding: `calc(9dvh + 26px) ${SIDE} 15dvh`,
+    gap: 20,
+    padding: `24px ${SIDE} calc(env(safe-area-inset-bottom, 0px) + 24px)`,
   },
   card: {
     flex: 1,
@@ -131,8 +132,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
     cursor: 'pointer',
   },
-  questionIllust: { height: '13dvh', maxHeight: 110, width: 'auto', marginBottom: 22 },
-  chatIllust: { height: '11dvh', maxHeight: 100, width: 'auto', marginBottom: 18 },
+  questionIllust: { height: 110, width: 'auto', marginBottom: 22 },
+  chatIllust: { height: 96, width: 'auto', marginBottom: 18 },
   subTag: { fontSize: 13, color: '#9E9E9E', marginBottom: 8 },
   cardTitle: { fontSize: 22, fontWeight: 700, color: '#000', letterSpacing: '-0.5px' },
 

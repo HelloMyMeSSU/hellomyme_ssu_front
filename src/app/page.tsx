@@ -409,7 +409,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
-    padding: `9dvh ${SIDE} 15dvh`,
+    padding: `clamp(60px, 9dvh, 90px) ${SIDE} clamp(90px, 15dvh, 150px)`,
   },
   cardQuestionWrap: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' },
   cardQuestion: {
@@ -424,7 +424,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
     cursor: 'pointer',
   },
-  questionIllust: { height: '13dvh', maxHeight: 110, width: 'auto', marginBottom: 22 },
+  questionIllust: { height: 'clamp(90px, 13dvh, 110px)', width: 'auto', marginBottom: 22 },
   subTag: { fontSize: 13, color: '#9E9E9E', marginBottom: 8 },
   cardTitle: { fontSize: 22, fontWeight: 700, color: '#000', letterSpacing: '-0.5px' },
   arrowGuide: {
@@ -452,7 +452,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chatIllust: { height: '11dvh', maxHeight: 100, width: 'auto', marginBottom: 18, filter: 'brightness(0.55)' },
+  chatIllust: { height: 'clamp(80px, 11dvh, 100px)', width: 'auto', marginBottom: 18, filter: 'brightness(0.55)' },
   chatSubtext: { fontSize: 13, color: '#8C8D90', marginBottom: 6 },
   chatTitle: { fontSize: 22, fontWeight: 700, color: '#0F0F10', letterSpacing: '-0.5px' },
 
@@ -572,7 +572,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   lowerBlock: {
     flex: '0 0 auto',
-    height: '34dvh',
+    height: 'clamp(260px, 34dvh, 320px)',
     marginTop: 'clamp(24px, 4.5dvh, 40px)',
     display: 'flex',
     flexDirection: 'column',
