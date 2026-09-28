@@ -85,7 +85,7 @@ function QuestionedProblem({ tooltip }: { tooltip?: React.ReactNode }) {
   );
 }
 
-// 4·5번 화면 공통: 멘토 답변 헤더 (흰 알약)
+// 4·5번 화면 공통: 멘토 답변 헤더 
 function MentorBar({ open }: { open: boolean }) {
   return (
     <div style={styles.mentorAnswerBar}>
@@ -145,12 +145,12 @@ export default function TutorialPage() {
           <CloseIcon />
         </button>
 
-        {/* 2. 스와이프 튜토리얼 5단계 */}
+        {/* 2. 클릭으로만 넘어가는 튜토리얼 5단계 */}
         <Swiper
           onSwiper={(swiper) => (swiperRef.current = swiper)}
           direction="horizontal"
           speed={350}
-          grabCursor={true}
+          allowTouchMove={false}
           style={{ width: '100%', height: '100%' }}
         >
 
@@ -297,33 +297,36 @@ export default function TutorialPage() {
             </div>
           </SwiperSlide>
 
-          {/* [SLIDE 5] 펼쳐진 풀이 과정 */}
+          {/* [SLIDE 5] 펼쳐진 풀이 과정 (전체 화면 스크롤) */}
           <SwiperSlide style={styles.swiperSlide}>
-            <div style={styles.slide}>
-              <div style={styles.topBar}>
-                <span style={styles.headerTitle}>문제 풀이 질문하기</span>
-                <Profile />
-              </div>
+            <div style={styles.scrollSlide}>
+              <div style={styles.slide}>
+                <div style={styles.topBar}>
+                  <span style={styles.headerTitle}>문제 풀이 질문하기</span>
+                  <Profile />
+                </div>
 
-              <div style={styles.qContent}>
-                <QuestionedProblem />
+                <div style={styles.qContent}>
+                  <QuestionedProblem />
 
-                <div style={styles.lowerBlock}>
-                  <span style={styles.sectionTag}>문제 풀이</span>
-                  <div style={{ marginBottom: 6 }}>
-                    <MentorBar open={true} />
-                  </div>
+                  <div style={styles.lowerBlock}>
+                    <span style={styles.sectionTag}>문제 풀이</span>
+                    <div style={{ marginBottom: 6 }}>
+                      <MentorBar open={true} />
+                    </div>
 
-                  <div style={styles.solutionCard}>
-                    <p style={styles.solP}>처음에는 두 수를 입력받는 것부터 생각하면 돼요!</p>
-                    <p style={styles.solP}>예를 들어 10과 7을 입력받았다고 해볼게요.</p>
-                    <ol style={styles.solList}>
-                      <li>먼저 첫 번째 수와 두 번째 수를 변수에 저장해요.</li>
-                      <li>두 수를 비교해서 어떤 수가 더 큰지 확인해요.</li>
-                      <li>첫 번째 수가 더 크다면 첫 번째 수를 출력하고, 그렇지 않다면 두 번째 수를 출력하면 돼요.</li>
-                    </ol>
-                    <p style={styles.solP}>파이썬으로 작성하면 이렇게 만들 수 있어요.</p>
-                    <pre style={styles.codeBlock}>{`a = int(input())\nb = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)`}</pre>
+                    <div style={styles.solutionCard}>
+                      <p style={styles.solP}>처음에는 두 수를 입력받는 것부터 생각하면 돼요!</p>
+                      <p style={styles.solP}>예를 들어 10과 7을 입력받았다고 해볼게요.</p>
+                      <ol style={styles.solList}>
+                        <li>먼저 첫 번째 수와 두 번째 수를 변수에 저장해요.</li>
+                        <li>두 수를 비교해서 어떤 수가 더 큰지 확인해요.</li>
+                        <li>첫 번째 수가 더 크다면 첫 번째 수를 출력하고, 그렇지 않다면 두 번째 수를 출력하면 돼요.</li>
+                      </ol>
+                      <p style={styles.solP}>파이썬으로 작성하면 이렇게 만들 수 있어요.</p>
+                      <pre style={styles.codeBlock}>{`a = int(input())\nb = int(input())\nif a > b:\n    print(a)\nelse:\n    print(b)`}</pre>
+                    </div>
+                    <div style={{ flexShrink: 0, height: `calc(${SAFE_BOTTOM} + 20px)` }} />
                   </div>
                 </div>
               </div>
@@ -416,45 +419,44 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'center',
     lineHeight: 1.2,
   },
+
   /* SLIDE 1 */
   slide1Content: {
     flex: 1,
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
-    padding: `clamp(32px, 9dvh, 90px) ${SIDE} clamp(60px, 15dvh, 150px)`,
+    padding: `40px ${SIDE} calc(env(safe-area-inset-bottom, 0px) + 24px)`,
   },
   cardsGrid: {
     flex: 1,
     minHeight: 0,
-    display: 'grid',
-    gridTemplateRows: '1fr 1fr',
-    rowGap: 44, // Click! + 화살표 문구가 들어갈 자리
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20, 
   },
-  cardSlot: { position: 'relative', minHeight: 0 },
-  cardQuestionWrap: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' },
+  cardSlot: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' },
+  cardQuestionWrap: { position: 'relative', flex: 1, minHeight: 0, display: 'flex' }, // JSX에서 안 쓰면 삭제해도 됨
   cardQuestion: {
-    position: 'absolute',
-    inset: 0,
+    flex: 1, 
+    minHeight: 0,
     backgroundColor: '#FFFFFF',
     borderRadius: 22,
-    padding: 'clamp(12px, 3%, 24px) 20px',
-    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)', 
     cursor: 'pointer',
   },
-  questionIllust: { height: 'clamp(90px, 13dvh, 110px)', width: 'auto', marginBottom: 22 },
+  questionIllust: { height: 110, width: 'auto', marginBottom: 22 },
   subTag: { fontSize: 13, color: '#9E9E9E', marginBottom: 8 },
   cardTitle: { fontSize: 22, fontWeight: 700, color: '#000', letterSpacing: '-0.5px' },
   arrowGuide: {
     ...guideText,
     position: 'absolute',
-    bottom: -40,
+    bottom: -44,
     left: '38%',
     display: 'flex',
     alignItems: 'flex-end',
@@ -466,19 +468,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     whiteSpace: 'nowrap',
   },
   cardChat: {
-    position: 'absolute',
-    inset: 0,
+    flex: 1,
+    minHeight: 0,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    padding: 'clamp(12px, 3%, 24px) 20px',
-    boxSizing: 'border-box',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)', 
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chatIllust: { height: 'clamp(80px, 11dvh, 100px)', width: 'auto', marginBottom: 18, filter: 'brightness(0.55)' },
-  chatSubtext: { fontSize: 13, color: '#8C8D90', marginBottom: 6 },
+  chatIllust: { height: 96, width: 'auto', marginBottom: 18, filter: 'brightness(0.55)' }, 
+  chatSubtext: { fontSize: 13, color: '#8C8D90', marginBottom: 8 },
   chatTitle: { fontSize: 22, fontWeight: 700, color: '#0F0F10', letterSpacing: '-0.5px' },
 
   /* SLIDE 2 (카메라) */
@@ -667,18 +667,22 @@ const styles: { [key: string]: React.CSSProperties } = {
   mentorMeta: { fontSize: 9, fontWeight: 400, color: '#333' },
 
   /* SLIDE 5 */
-  solutionCard: {
-    flex: 1,
-    minHeight: 0,
-    backgroundColor: '#fff',
-    borderRadius: '14px 14px 0 0',
-    padding: `18px 16px calc(${SAFE_BOTTOM} + 16px)`,
+  scrollSlide: {
+    height: '100%',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
-    color: '#222',
-    fontSize: 12,
-    lineHeight: 1.55,
+    scrollbarWidth: 'thin', 
+    WebkitOverflowScrolling: 'touch',
   },
+  solutionCard: {
+  flex: '1 0 auto',
+  backgroundColor: '#fff',
+  borderRadius: 14,                 
+  padding: '18px 16px',             
+  color: '#222',
+  fontSize: 12,
+  lineHeight: 1.55,
+},
   solP: { margin: '0 0 12px' },
   solList: { margin: '0 0 12px', paddingLeft: 18 },
   codeBlock: {
